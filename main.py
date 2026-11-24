@@ -20,7 +20,12 @@ MAX_CHARS = 200
 def validate(line):
     """The scorer needs UTF-8 text of 1-200 chars, non-whitespace-only."""
     if not line or not line.strip():
-        raise ValueError("entry line must not be empty or whitespace-only")
+        raise ValueError(
+            "entry line must not be empty or whitespace-only "
+            "(got %d chars)" % len(line or "")
+        )
+    if any(ord(ch) < 32 and ch not in "\t" for ch in line) or "\t" in line:
+        raise ValueError("entry line must not contain control characters")
     if "\n" in line or "\r" in line:
         raise ValueError("entry line must be a single line")
     if len(line) > MAX_CHARS:
